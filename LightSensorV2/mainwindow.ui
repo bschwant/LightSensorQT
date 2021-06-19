@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="device_list">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>50</y>
+      <width>241</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>180</y>
+      <width>451</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="command_label">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>150</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Commands</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="light_sensor_dash">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>10</y>
+      <width>291</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Light Sensor Dashboard</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="device_label">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>70</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select Device</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="baud_label">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>70</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select Baud</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="baud_list">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>70</y>
+      <width>101</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>9600</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="connect_button">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>110</y>
+      <width>181</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect To Device</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="help_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>170</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>help</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="tr_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>200</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Report Time</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="dr_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Report Date</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="temp_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>260</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Temperature</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="batt_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>290</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="data_button">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>320</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Get Data</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>160</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Device Output</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="dev_conn">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>110</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Device Not Connected</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
