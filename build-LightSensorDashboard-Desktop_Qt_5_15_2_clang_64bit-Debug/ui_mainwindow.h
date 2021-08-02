@@ -38,13 +38,14 @@ public:
     QPushButton *calibrate_button;
     QPushButton *ef_button;
     QPushButton *log_button;
-    QPushButton *pushButton_2;
+    QPushButton *sample_button;
     QWidget *command_line;
     QPushButton *tr_button;
     QPushButton *dr_button;
-    QPushButton *sample_button;
+    QPushButton *sample_button_other;
     QPushButton *tsl237_button;
     QPushButton *batt_button;
+    QPushButton *help_button;
     QTabWidget *device_connection;
     QWidget *tab;
     QWidget *widget;
@@ -114,9 +115,9 @@ public:
         log_button = new QPushButton(setup_tab);
         log_button->setObjectName(QString::fromUtf8("log_button"));
         log_button->setGeometry(QRect(260, 60, 112, 32));
-        pushButton_2 = new QPushButton(setup_tab);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(260, 20, 112, 32));
+        sample_button = new QPushButton(setup_tab);
+        sample_button->setObjectName(QString::fromUtf8("sample_button"));
+        sample_button->setGeometry(QRect(260, 20, 112, 32));
         user_options->addTab(setup_tab, QString());
         command_line = new QWidget();
         command_line->setObjectName(QString::fromUtf8("command_line"));
@@ -126,15 +127,18 @@ public:
         dr_button = new QPushButton(command_line);
         dr_button->setObjectName(QString::fromUtf8("dr_button"));
         dr_button->setGeometry(QRect(30, 60, 141, 32));
-        sample_button = new QPushButton(command_line);
-        sample_button->setObjectName(QString::fromUtf8("sample_button"));
-        sample_button->setGeometry(QRect(190, 20, 131, 32));
+        sample_button_other = new QPushButton(command_line);
+        sample_button_other->setObjectName(QString::fromUtf8("sample_button_other"));
+        sample_button_other->setGeometry(QRect(190, 20, 131, 32));
         tsl237_button = new QPushButton(command_line);
         tsl237_button->setObjectName(QString::fromUtf8("tsl237_button"));
         tsl237_button->setGeometry(QRect(190, 60, 131, 32));
         batt_button = new QPushButton(command_line);
         batt_button->setObjectName(QString::fromUtf8("batt_button"));
         batt_button->setGeometry(QRect(340, 20, 112, 32));
+        help_button = new QPushButton(command_line);
+        help_button->setObjectName(QString::fromUtf8("help_button"));
+        help_button->setGeometry(QRect(340, 60, 112, 32));
         user_options->addTab(command_line, QString());
         device_connection = new QTabWidget(centralwidget);
         device_connection->setObjectName(QString::fromUtf8("device_connection"));
@@ -269,7 +273,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        user_options->setCurrentIndex(0);
+        user_options->setCurrentIndex(1);
         device_connection->setCurrentIndex(0);
         connect_button->setDefault(false);
 
@@ -287,13 +291,14 @@ public:
         calibrate_button->setText(QCoreApplication::translate("MainWindow", "Calibrate", nullptr));
         ef_button->setText(QCoreApplication::translate("MainWindow", "Erase Flash", nullptr));
         log_button->setText(QCoreApplication::translate("MainWindow", "Log", nullptr));
-        pushButton_2->setText(QCoreApplication::translate("MainWindow", "Sample", nullptr));
+        sample_button->setText(QCoreApplication::translate("MainWindow", "Sample", nullptr));
         user_options->setTabText(user_options->indexOf(setup_tab), QCoreApplication::translate("MainWindow", "Device Setup", nullptr));
         tr_button->setText(QCoreApplication::translate("MainWindow", "Report Time (tr)", nullptr));
         dr_button->setText(QCoreApplication::translate("MainWindow", "Report Data (dr)", nullptr));
-        sample_button->setText(QCoreApplication::translate("MainWindow", "Sample", nullptr));
+        sample_button_other->setText(QCoreApplication::translate("MainWindow", "Sample", nullptr));
         tsl237_button->setText(QCoreApplication::translate("MainWindow", "TSL237", nullptr));
         batt_button->setText(QCoreApplication::translate("MainWindow", "Battery", nullptr));
+        help_button->setText(QCoreApplication::translate("MainWindow", "Help", nullptr));
         user_options->setTabText(user_options->indexOf(command_line), QCoreApplication::translate("MainWindow", "Commands", nullptr));
         conn_label->setText(QCoreApplication::translate("MainWindow", "Device Connection Status:", nullptr));
         status_label->setText(QCoreApplication::translate("MainWindow", "Not Connected", nullptr));

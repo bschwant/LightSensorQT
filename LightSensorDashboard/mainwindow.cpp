@@ -8,10 +8,12 @@
 #include <QFile>
 #include <QTextStream>
 #include "helper_functions.h"
+#include <QDir>
+#include <QStandardPaths>
 
 // Function prototypes
-void print_message();
 QString get_current_date();
+QString get_current_time();
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -44,16 +46,18 @@ void MainWindow::updateSerialPorts()
 // Shows error in textbox if NOK is recieved
 void MainWindow::check_command(QByteArray response)
 {
-    qDebug()<< "Made it to check command with response: "<< response;
+    qDebug()<< "Function: check_command()";
     bool response_error;
     response_error = response.contains("NOK");
 
     if(response_error) {
         ui ->output_box -> setText("NOK Recieved, try sending new command");
-        qDebug()<<"INVALID COMMAND";
+        qDebug()<<"INVALID COMMAND: "<< last_command;
+        last_command = "";
     }
     else {
-        qDebug()<<"VALID COMMAND";
+        qDebug()<<"Command: "<< last_command<< "   VALID";
+        last_command = "";
     }
   //  qDebug()<< "Contains:? "<<response.contains("NOK");
 
@@ -85,12 +89,12 @@ void MainWindow::on_connect_button_clicked()
         connect(serial, SIGNAL(readyRead()), this, SLOT(on_ReceivedData()));
         serial->setDataTerminalReady(true);
         ui->status_label->setText("Device Connected");
+        get_uid();
     }
     else {
         qDebug() << "Error opening connection";
+
     }
-    get_uid();
-    helper_functions::print_message();
 }
 
 // Send uid command to device to set UID for data saving
@@ -137,8 +141,12 @@ void MainWindow::save_data(QList<QByteArray> lines)
 //    // Get file name from UID
 //    QString fileName =  ui->uid_data->text();
 //    fileName.append(".txt");
-    QString filename = "/Users/brianschwantes/Desktop/LightSensorWork/LightSensorV2/";
-    filename.append("sensor_data.txt");
+//    QString curr_path = QDir::currentPath();
+//    curr_path.cdUP();
+//    qDebug()<<curr_path;
+    QString filename = "/Users/brianschwantes/Desktop/";
+    filename.append(device_uid);
+    filename.append(".txt");
 
     qDebug() << " File name: "<< filename;
     QFile file(filename);
@@ -160,7 +168,7 @@ void MainWindow::save_data(QList<QByteArray> lines)
     qDebug() << " LINE 1"<< lines[1]<<"\n";
     //int i = 1;
     //while(lines[i].split('\n') != "OK\r"){
-    for(int i = 1; i<lines.count()-4; i++) {
+    for(int i = 1; i<lines.count()-2; i++) {
         temp_line = lines[i].split(',');
         temp_index = temp_line[1].toInt();
         qDebug()<<"TEMP INDEX: "<<temp_index;
@@ -171,7 +179,7 @@ void MainWindow::save_data(QList<QByteArray> lines)
         else
             out<<lines[i];
             qDebug() << lines[i];
-        i++;
+        //i++;
     }
 
     qDebug() << "LARGEST INDEX "<< largest_index;
@@ -187,9 +195,12 @@ void MainWindow::on_ReceivedData()
     while(serial->waitForReadyRead(1000)) {
         data.append(serial->readAll());
     }
-    int len = data.count();
-    len = len - 26;
-    data.replace(len, 26, "");
+ //   qDebug() << "Response from light sensor" << data ;
+
+    // Deletes IULS xxxxxx from end of message
+//    int len = data.count();
+//    len = len - 26;
+//    data.replace(len, 26, "");
     ui ->output_box -> setText(data);
     qDebug() << data << data.count();
 
@@ -202,6 +213,7 @@ void MainWindow::on_ReceivedData()
         int len = lines[1].count();
         lines[1].replace(len-1,1,"");
         ui -> uid_label -> setText(lines[1]);
+        device_uid = lines[1];
     }
 
     if (lines[0] == "data\n") {
@@ -215,5 +227,75 @@ void MainWindow::on_data_button_clicked()
     qDebug()<< "Sending 'data' command";
     QString text = "data\n\r";
     serial->write(text.toStdString().c_str());
+}
+
+/**
+ * @brief Sets date based on system when button is pressed
+ */
+void MainWindow::on_ds_button_clicked()
+{
+    qDebug()<<"Function: on_ds_button_clicked()";
+    QString current_date = helper_functions::get_current_date();
+    qDebug()<<"Current Date Recieved: "<< current_date;
+
+    serial->write(current_date.toStdString().c_str());
+    last_command = current_date;
+
+}
+
+/**
+ * @brief Sets time based on system when button is pressed
+ */
+void MainWindow::on_ts_button_clicked()
+{
+    qDebug()<<"Function: on_ts_button_clicked()";
+    QString current_time = helper_functions::get_current_time();
+    qDebug()<<"Current Time Recieved: "<< current_time;
+
+    serial->write(current_time.toStdString().c_str());
+    last_command = current_time;
+}
+
+
+void MainWindow::on_batt_button_clicked()
+{
+    qDebug()<<"Function: on_batt_button_clicked()";
+    QString command = "batt\n\r";
+    serial->write(command.toStdString().c_str());
+    last_command = command;
+
+}
+
+
+void MainWindow::on_help_button_clicked()
+{
+    qDebug()<<"Function: on_help_button_clicked()";
+    QString command = "help\n\r";
+    serial->write(command.toStdString().c_str());
+    last_command = command;
+}
+
+
+
+/**
+ * @brief Sends sample command to light sensor
+ */
+void MainWindow::on_sample_button_clicked()
+{
+    qDebug()<<"Function: on_sample_button_clicked()";
+    QString command = "sample\n\r";
+    serial->write(command.toStdString().c_str());
+    last_command = command;
+}
+
+/**
+ * @brief Sends erase flash command to light sensor
+ */
+void MainWindow::on_ef_button_clicked()
+{
+    qDebug()<<"Function: on_ef_button_clicked()";
+    QString command = "ef\n\r";
+    serial->write(command.toStdString().c_str());
+    last_command = command;
 }
 

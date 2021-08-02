@@ -8,8 +8,8 @@ class helper_functions
 
 public:
     helper_functions();
-    static void print_message();
-    QString get_current_date();
+    static QString get_current_date();
+    static QString get_current_time();
 };
 
 #endif // HELPER_FUNCTIONS_H
