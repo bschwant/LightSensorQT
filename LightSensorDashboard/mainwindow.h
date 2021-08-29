@@ -19,7 +19,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_ReceivedData();
+    int on_ReceivedData();
 //    void on_connect_button_clicked();
     bool check_command(QByteArray response);
 
@@ -51,11 +51,13 @@ private slots:
 
     void on_get_flash_info_clicked();
 
-    void on_read_data_button_clicked();
+//    void on_read_data_button_clicked();
 
-    void on_read_logs_button_clicked();
+//    void on_read_logs_button_clicked();
 
     void on_change_path_button_clicked();
+
+    void on_collect_button_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -69,6 +71,8 @@ private:
     void save_logs(QList<QByteArray> lines);
     void change_path(QString new_path);
     void set_default_path();
+    void save_to_file(QList<QByteArray> lines, int file_type );
+    void save_collection_record();
 
     void open_port_for_commun();
     void send_command(QString command);
@@ -79,5 +83,6 @@ private:
     QString device_serial_num;
     qint16 num_records;
     QString saving_path;
+    int count;
 };
 #endif // MAINWINDOW_H

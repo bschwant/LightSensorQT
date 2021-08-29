@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/status">
+        <file>red_x.png</file>
+        <file>yellow.png</file>
+        <file>green_check.png</file>
+    </qresource>
+</RCC>

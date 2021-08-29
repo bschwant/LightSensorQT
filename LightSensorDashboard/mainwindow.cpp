@@ -23,6 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     serial = new QSerialPort(this);
     ui->program_pages->setCurrentIndex(0);
+    ui->data_read_bar->setValue(0);
+    num_records = 0;
+    count = 0;
+    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
     //updateSerialPorts();
 }
 
@@ -167,16 +171,26 @@ void MainWindow::on_get_flash_info_clicked()
 }
 
 
-void MainWindow::on_read_data_button_clicked()
-{
-    qDebug() << "Function: on_read_data_button_clicked()";
-    send_command("data");
-}
+//void MainWindow::on_read_data_button_clicked()
+//{
+//    qDebug() << "Function: on_read_data_button_clicked()";
+//    send_command("data");
+//}
 
-void MainWindow::on_read_logs_button_clicked()
+//void MainWindow::on_read_logs_button_clicked()
+//{
+//    qDebug() << "Function: on_read_logs_button_clicked()";
+//    send_command("log");
+//}
+void MainWindow::on_collect_button_clicked()
 {
-    qDebug() << "Function: on_read_logs_button_clicked()";
-    send_command("log");
+    qDebug() << "Function: on_collect_button_clicked()";
+    count = 0;
+    ui->curr_status_label->setText("Downloading Data");
+    send_command("data");
+
+// /   send_command("logs");
+
 }
 
 /**
@@ -251,11 +265,7 @@ void MainWindow::save_logs(QList<QByteArray> lines)
 
     int num_lines = lines.count();
     qDebug() << "Number of lines to write: "<<num_lines;
-    //int i = 1;
 
-//    qDebug() << " LINE 0"<< lines[0]<<"\n";
-//    qDebug() << " LINE 1"<< lines[1]<<"\n";
-    //int i = 1;
     //while(lines[i].split('\n') != "OK\r"){
     for(int i = 1; i<lines.count()-2; i++) {
         temp_line = lines[i].split(',');
@@ -306,9 +316,6 @@ void MainWindow::save_data(QList<QByteArray> lines)
     qDebug() << "Number of lines to write: "<<num_lines;
     //int i = 1;
 
-  //  qDebug() << " LINE 0"<< lines[0]<<"\n";
-  //  qDebug() << " LINE 1"<< lines[1]<<"\n";
-    //int i = 1;
     //while(lines[i].split('\n') != "OK\r"){
     for(int i = 1; i<lines.count()-2; i++) {
         temp_line = lines[i].split(',');
@@ -329,26 +336,141 @@ void MainWindow::save_data(QList<QByteArray> lines)
     file.close();
 }
 
+/**
+ * @brief Function to data/logs/records to respective files
+ * @param lines
+ * @param file_type int - 0 = data, 1 = logs
+ */
+void MainWindow::save_to_file(QList<QByteArray> lines, int file_type)
+{
+    qDebug()<<"Function: save_to_file";
+    QString filename = saving_path;
+
+    if(file_type == 0)
+        filename.append("/Data_");
+    else if(file_type == 1)
+        filename.append("/Logs_");
+//    else if(file_type == 2)
+//        filename.append("/Records_");
+    else
+        qDebug()<<"File Type Not Valid";
+
+  //  filename.append("/Data_");
+    filename.append(device_serial_num);
+    filename.append("_");
+    filename.append(device_uid);
+    filename.append(".txt");
+
+    qDebug() << " File name: "<< filename;
+    QFile file(filename);
+
+    // Handles saving of data and logs
+    if (file_type == 0 or file_type == 1) {
+        int largest_index = get_largest_data_index(filename);
+
+        file.open(QIODevice::Append);
+
+        // Save any unsaved entries
+        QTextStream out(&file);
+        QList<QByteArray> temp_line;
+        int temp_index = 0;
+
+        int num_lines = lines.count();
+
+        for(int i = 1; i<lines.count()-2; i++) {
+            temp_line = lines[i].split(',');
+            temp_index = temp_line[1].toInt();
+
+            if(temp_index < largest_index)
+                continue;
+            else
+                out<<lines[i];
+              //  qDebug() << lines[i];
+        }
+        qDebug() << "LARGEST INDEX "<< largest_index;
+        out.flush();
+    }
+
+    file.close();
+}
+
+
+void MainWindow::save_collection_record()
+{
+    qDebug()<<"Function: save_to_file";
+    QString filename = saving_path;
+    filename.append("/Records_");
+    filename.append(device_serial_num);
+    filename.append("_");
+    filename.append(device_uid);
+    filename.append(".txt");
+
+    qDebug() << " Filename: "<< filename;
+    QFile file(filename);
+
+    // Get current date and time of collection
+    QString current_date = helper_functions::get_current_date();
+    QString current_time = helper_functions::get_current_time();
+
+    // Get user long/lat input
+    QString longitude = ui->longitude_edit->text();
+    QString latitude = ui->latitude_edit->text();
+
+    // Get user note input
+    QString user_note = ui->note_input->toPlainText();
+
+    file.open(QIODevice::Append);
+
+    QTextStream out(&file);
+
+    file.open(QIODevice::Append);
+
+    out<<"Collection Date: " << current_date << "\n";
+    out<<"Collection Time: " << current_time << "\n";
+    out<<"Location: "<< longitude << ", " << latitude << "\n";
+    out<<"Note: "<< user_note << "\n";
+    out<<"-------------------------------------------------------------\n\n";
+
+    out.flush();
+    file.close();
+
+    ui->curr_status_label->setText("Download Finished");
+
+}
+
 // Handles recieved data from connected device
-void MainWindow::on_ReceivedData()
+int MainWindow::on_ReceivedData()
 {
     // Recieving Data
     QByteArray data;
-    int count = 0;
+    //int count = 0;
     QByteArray temp;
-    while(serial->waitForReadyRead(1000)) {
+    while(serial->waitForReadyRead(100)) {
    // while(serial->canReadLine()) {
         temp = serial->readAll();
         if (temp == "\n") {
             count++;
             if(last_command == "data") {
-                if (count % 15 == 0) {
-//                    double data_read_percent = double(count) / double(num_records) * 100.0;
-//                    ui->data_read_bar->setValue(data_read_percent);
-                    qDebug()<< "1 Second";
+                if (count % 30 == 0) {
+                    int data_read_percent = double(count) / double(num_records) * 100.0;
+                    qDebug()<< "Perecent: " << data_read_percent;
+                    ui->data_read_bar->setValue(data_read_percent);
+                    qApp->processEvents();
+                    qDebug()<< "2 Second";
                 }
             }
+            else if(last_command == "log") {
+                if (count % 30 == 0) {
+                    int data_read_percent = double(count) / double(num_records) * 100.0;
+                    qDebug()<< "Perecent: " << data_read_percent;
+                    ui->data_read_bar->setValue(data_read_percent);
+                    qApp->processEvents();
+                    qDebug()<< "2 Second";
+                }
+            }
+
         }
+
 
         // Replaced read all with temp
         data.append(temp);
@@ -368,12 +490,22 @@ void MainWindow::on_ReceivedData()
     if (last_command == "@") {
         if(check_command(data)) {
             qDebug()<< "Connected to Light Sensor";
-            ui->status_img->setText("Device Connected");
+        //    ui->status_img->setText("Device Connected");
+
+            ui->img_status_label->setPixmap(QPixmap(":/status/green_check.png"));
+           // ui->img_status_label->setPixmap(QPixmap(":/Resources/images.qrc/status/green_check.png"));
+            //ui->img_status_label->setVisible(true);
             ui->continue_button->setVisible(true);
+
+            qApp->processEvents();
         }
         else {
-            ui->status_img->setText("Unable to Connect");
+            ui->img_status_label->setPixmap(QPixmap(":/status/red_X.png"));
+           // ui->status_img->setText("Unable to Connect");
+            //ui->img_status_label->setPixmap(red->pixmap(16,16));
+            qApp->processEvents();
         }
+        return 0;
     }
 
     QList<QByteArray> lines = data.split('\r');
@@ -388,6 +520,7 @@ void MainWindow::on_ReceivedData()
         }
         else
             qDebug()<< "Error getting Device UID";
+        return 0;
     }
 
     if (last_command == "flash") {
@@ -410,30 +543,34 @@ void MainWindow::on_ReceivedData()
             ui->flash_usage_bar->setValue(percent);
 
         }
+        return 0;
     }
 
     if (last_command == "data") {
         if(check_command(data)) {
-            qDebug()<< "Response after Data call"<<data;
-            save_data(lines);
+        //    qDebug()<< "Response after Data call"<<data;
+            save_to_file(lines, 0);
+            send_command("log");
+            ui->curr_status_label->setText("Downloading Logs");
+           // save_data(lines);
         }
+        return 0;
     }
 
     if (last_command == "log") {
         if(check_command(data)) {
-            qDebug()<< "Response after Logs call"<<data;
-            save_logs(lines);
+        //    qDebug()<< "Response after Logs call"<<data;
+            save_to_file(lines, 1);
+            ui->data_read_bar->setValue(100);
+            qApp->processEvents();
         }
+        ui->curr_status_label->setText("Saving Collection Record");
+        save_collection_record();
+        return 0;
     }
-   //check_command(data);
 
-   // QList<QByteArray> lines = data.split('\r');
-//    qDebug() <<lines.count();
-
-//    if (lines[0] == "data\n") {
-//        save_data(lines);
-//    }
 }
+
 
 // Send data command
 //void MainWindow::on_data_button_clicked()
@@ -547,6 +684,8 @@ void MainWindow::on_ReceivedData()
 //{
 //    ui->flash_usage_bar->setValue(value)
 //}
+
+
 
 
 

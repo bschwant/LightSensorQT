@@ -22,7 +22,8 @@ QString helper_functions::get_current_date() {
     QString date;
 
     QDate cd = QDate::currentDate();
-    date = "ds," + cd.toString("MM,dd,yyyy\n\r");
+//    date = "ds," + cd.toString("MM/dd/yyyy\n\r");
+     date = cd.toString("MM/dd/yyyy");
 
     qDebug()<<"Current Date: "<< date;
 
@@ -39,7 +40,8 @@ QString helper_functions::get_current_time() {
     QString time;
 
     QTime ct = QTime::currentTime();
-    time = "ts,"+ct.toString("HH,m,s\n\r");
+   // time = "ts,"+ct.toString("HH:m\n\r");
+    time = ct.toString("HH:m");
 
     qDebug()<<"Current Time: "<< time;
 
