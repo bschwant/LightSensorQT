@@ -20,26 +20,7 @@ public:
 
 private slots:
     int on_ReceivedData();
-//    void on_connect_button_clicked();
     bool check_command(QByteArray response);
-
-//    void on_data_button_clicked();
-
-//    void on_ds_button_clicked();
-
-//    void on_batt_button_clicked();
-
-//    void on_help_button_clicked();
-
-//    void on_ts_button_clicked();
-
-//    void on_sample_button_clicked();
-
-//    void on_ef_button_clicked();
-
-//    void on_log_button_clicked();
-
-//    void on_ef_all_button_clicked();
 
     void on_serial_enter_clicked();
 
@@ -47,17 +28,16 @@ private slots:
 
     void on_continue_button_clicked();
 
-//    void on_flash_usage_bar_valueChanged(int value);
 
     void on_get_flash_info_clicked();
-
-//    void on_read_data_button_clicked();
-
-//    void on_read_logs_button_clicked();
 
     void on_change_path_button_clicked();
 
     void on_collect_button_clicked();
+
+    void on_get_last_location_clicked();
+
+    void on_change_location_button_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -67,8 +47,6 @@ private:
     void updateSerialPorts();
     void get_uid();
     int get_largest_data_index(QString filename);
-    void save_data(QList<QByteArray> lines);
-    void save_logs(QList<QByteArray> lines);
     void change_path(QString new_path);
     void set_default_path();
     void save_to_file(QList<QByteArray> lines, int file_type );
@@ -76,6 +54,7 @@ private:
 
     void open_port_for_commun();
     void send_command(QString command);
+    void update_device_directory();
 
     // Global Variables for use in program
     QString last_command;
@@ -83,6 +62,7 @@ private:
     QString device_serial_num;
     qint16 num_records;
     QString saving_path;
+    QString device_dir;
     int count;
 };
 #endif // MAINWINDOW_H

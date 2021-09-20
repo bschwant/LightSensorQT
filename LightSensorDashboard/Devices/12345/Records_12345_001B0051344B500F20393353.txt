@@ -1,0 +1,23 @@
+Collection Date: 09/14/2021
+Collection Time: 17:43
+Location: -180, -90
+Note: Easy collection
+-------------------------------------------------------------
+Collection Date: 09/14/2021
+Collection Time: 19:10
+Location:  -178.35,  -85.11
+Note: 
+-------------------------------------------------------------
+
+Collection Date: 09/14/2021
+Collection Time: 19:50
+Location:   -178.35,   -85.11
+Note:  Succesful Collection!
+-------------------------------------------------------------
+
+Collection Date: 09/14/2021
+Collection Time: 20:24
+Location:    -174.78,    -85.11
+Note:   Succesful Collection!
+-------------------------------------------------------------
+

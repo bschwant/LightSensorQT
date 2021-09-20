@@ -3,6 +3,12 @@
 #include "QDebug"
 #include <QTime>
 #include <QDate>
+#include <QFile>
+#include <QTextStream>
+#include "helper_functions.h"
+#include <QDir>
+#include <QStandardPaths>
+#include <QFileDialog>
 
 helper_functions::helper_functions()
 {
@@ -10,6 +16,73 @@ helper_functions::helper_functions()
 
 }
 
+/**
+ * @brief helper function to create string for the device directory
+ * @param path
+ * @param ser_num
+ * @return
+ */
+QString helper_functions::get_device_dir(QString path, QString ser_num){
+    QString new_dir;
+    new_dir.append(path);
+    new_dir.append("/");
+    new_dir.append(ser_num);
+    return new_dir;
+}
+
+/**
+ * @brief helper function that checks if directory exists for connected device exists, and creates one if not
+ * @param device_directory input as <path>/<serial#>_<device uid>
+ */
+QString helper_functions::check_if_directory_exists(QString device_directory) {
+    QDir dir(device_directory);
+    if(!dir.exists())
+        dir.mkpath(".");
+    return device_directory;
+}
+
+QString helper_functions::parse_past_records(QStringList record_lines) {
+    int len = record_lines.length();
+    qDebug()<< "Num Lines in record:"<<len;
+
+    QString temp_line;
+    QString date = NULL;
+    QString time;
+    QString location;
+    QString longitude;
+    QString latitude;
+    QString note;
+    QStringList temp_list;
+
+    qDebug()<< "Record lines:"<<record_lines;
+   for (int i = len-1; date==NULL; i--) {
+   // while(date == NULL) {
+        temp_line = record_lines[i];
+        if (temp_line == "-------------------------------------------------------------")
+            continue;
+        qDebug()<<"Parsed Line:"<< temp_line;
+
+        temp_list = temp_line.split(':');
+
+        if (temp_list[0] == "Location") {
+            location = temp_list[1];
+            temp_list = location.split(',');
+            longitude = temp_list[1];
+            latitude = temp_list[0];
+        }
+        else if(temp_list[0] == "Collection Time") {
+            time = temp_list[1]+':'+temp_list[2];
+        }
+        else if(temp_list[0] == "Collection Date") {
+            date= temp_list[1];
+        }
+        else if(temp_list[0] == "Note") {
+            note= temp_list[1];
+        }
+    }
+    QString return_string = latitude+','+longitude+','+date+','+time+','+note;
+    return return_string;
+}
 
 /**
  * @brief Function to get current date based on system

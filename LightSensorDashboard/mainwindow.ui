@@ -745,6 +745,7 @@
         </property>
         <property name="font">
          <font>
+          <pointsize>14</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -756,7 +757,7 @@
        <widget class="QLabel" name="dev_uid_lab">
         <property name="geometry">
          <rect>
-          <x>300</x>
+          <x>330</x>
           <y>40</y>
           <width>31</width>
           <height>16</height>
@@ -764,6 +765,7 @@
         </property>
         <property name="font">
          <font>
+          <pointsize>14</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -777,13 +779,13 @@
          <rect>
           <x>200</x>
           <y>40</y>
-          <width>71</width>
+          <width>101</width>
           <height>16</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -793,7 +795,7 @@
        <widget class="QLabel" name="dev_uid">
         <property name="geometry">
          <rect>
-          <x>340</x>
+          <x>370</x>
           <y>40</y>
           <width>181</width>
           <height>16</height>
@@ -801,7 +803,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -1406,8 +1408,8 @@
        <widget class="QProgressBar" name="data_read_bar">
         <property name="geometry">
          <rect>
-          <x>510</x>
-          <y>350</y>
+          <x>590</x>
+          <y>410</y>
           <width>181</width>
           <height>16</height>
          </rect>
@@ -1903,7 +1905,7 @@ background-color: rgb(255, 255, 255);
          <rect>
           <x>200</x>
           <y>230</y>
-          <width>321</width>
+          <width>411</width>
           <height>31</height>
          </rect>
         </property>
@@ -1919,14 +1921,14 @@ background-color: rgb(255, 255, 255);
        <widget class="QPushButton" name="change_path_button">
         <property name="geometry">
          <rect>
-          <x>520</x>
+          <x>610</x>
           <y>230</y>
-          <width>131</width>
+          <width>141</width>
           <height>32</height>
          </rect>
         </property>
         <property name="text">
-         <string>Change Location</string>
+         <string>Change File Path</string>
         </property>
        </widget>
        <widget class="QLabel" name="download_label">
@@ -1953,7 +1955,7 @@ background-color: rgb(255, 255, 255);
        <widget class="QPushButton" name="collect_button">
         <property name="geometry">
          <rect>
-          <x>610</x>
+          <x>600</x>
           <y>430</y>
           <width>141</width>
           <height>51</height>
@@ -2011,7 +2013,7 @@ background-color: rgb(255, 255, 255);
         <property name="geometry">
          <rect>
           <x>90</x>
-          <y>380</y>
+          <y>370</y>
           <width>121</width>
           <height>21</height>
          </rect>
@@ -2046,13 +2048,13 @@ background-color: rgb(255, 255, 255);
         <property name="geometry">
          <rect>
           <x>90</x>
-          <y>410</y>
+          <y>400</y>
           <width>271</width>
           <height>61</height>
          </rect>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -2099,7 +2101,7 @@ background-color: rgb(255, 255, 255);
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>90</x>
@@ -2136,8 +2138,8 @@ background-color: rgb(255, 255, 255);
        <widget class="QLabel" name="curr_status_label">
         <property name="geometry">
          <rect>
-          <x>520</x>
-          <y>330</y>
+          <x>620</x>
+          <y>390</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -2160,8 +2162,8 @@ background-color: rgb(255, 255, 255);
        <widget class="QLabel" name="curr_task_label">
         <property name="geometry">
          <rect>
-          <x>510</x>
-          <y>310</y>
+          <x>610</x>
+          <y>360</y>
           <width>129</width>
           <height>19</height>
          </rect>
@@ -2178,6 +2180,111 @@ background-color: rgb(255, 255, 255);
          <string>Download Status:</string>
         </property>
        </widget>
+       <widget class="QPushButton" name="get_last_location">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>470</y>
+          <width>131</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Get Last Location</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="change_location_button">
+        <property name="geometry">
+         <rect>
+          <x>222</x>
+          <y>470</y>
+          <width>141</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Update</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="last_time_collection_label">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>280</y>
+          <width>141</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+          <underline>true</underline>
+         </font>
+        </property>
+        <property name="text">
+         <string>Last Collection Time</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="time_label">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>300</y>
+          <width>91</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>N/A</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>340</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <underline>true</underline>
+         </font>
+        </property>
+        <property name="text">
+         <string>Last Collection Date</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="date_label">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>360</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>N/A</string>
+        </property>
+       </widget>
+       <zorder>layoutWidget</zorder>
+       <zorder>curr_status_label</zorder>
+       <zorder>curr_task_label</zorder>
        <zorder>layoutWidget</zorder>
        <zorder>info_label</zorder>
        <zorder>dev_ser_num_label</zorder>
@@ -2200,13 +2307,15 @@ background-color: rgb(255, 255, 255);
        <zorder>collect_button</zorder>
        <zorder>sensor_location_label</zorder>
        <zorder>loc_instruct_label</zorder>
-       <zorder>latitude_edit</zorder>
-       <zorder>longitude_edit</zorder>
-       <zorder>lat_label</zorder>
-       <zorder>long_label</zorder>
        <zorder>note_label</zorder>
        <zorder>line_4</zorder>
        <zorder>note_input</zorder>
+       <zorder>get_last_location</zorder>
+       <zorder>change_location_button</zorder>
+       <zorder>last_time_collection_label</zorder>
+       <zorder>time_label</zorder>
+       <zorder>label</zorder>
+       <zorder>date_label</zorder>
       </widget>
      </widget>
     </item>

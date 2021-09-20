@@ -70,16 +70,18 @@ public:
     QLabel *note_label;
     QFrame *line_4;
     QTextEdit *note_input;
-    QWidget *widget;
+    QWidget *layoutWidget2;
     QVBoxLayout *longitude_label;
     QLineEdit *longitude_edit;
     QLabel *long_label;
-    QWidget *widget1;
+    QWidget *layoutWidget3;
     QVBoxLayout *latitude_layout;
     QLineEdit *latitude_edit;
     QLabel *lat_label;
     QLabel *curr_status_label;
     QLabel *curr_task_label;
+    QPushButton *get_last_location;
+    QPushButton *change_location_button;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -293,22 +295,23 @@ public:
         dev_ser_num_label->setObjectName(QString::fromUtf8("dev_ser_num_label"));
         dev_ser_num_label->setGeometry(QRect(90, 40, 101, 16));
         QFont font3;
+        font3.setPointSize(14);
         font3.setBold(true);
         font3.setWeight(75);
         dev_ser_num_label->setFont(font3);
         dev_uid_lab = new QLabel(device_info);
         dev_uid_lab->setObjectName(QString::fromUtf8("dev_uid_lab"));
-        dev_uid_lab->setGeometry(QRect(300, 40, 31, 16));
+        dev_uid_lab->setGeometry(QRect(330, 40, 31, 16));
         dev_uid_lab->setFont(font3);
         dev_ser_num = new QLabel(device_info);
         dev_ser_num->setObjectName(QString::fromUtf8("dev_ser_num"));
-        dev_ser_num->setGeometry(QRect(200, 40, 71, 16));
+        dev_ser_num->setGeometry(QRect(200, 40, 101, 16));
         QFont font4;
-        font4.setPointSize(12);
+        font4.setPointSize(14);
         dev_ser_num->setFont(font4);
         dev_uid = new QLabel(device_info);
         dev_uid->setObjectName(QString::fromUtf8("dev_uid"));
-        dev_uid->setGeometry(QRect(340, 40, 181, 16));
+        dev_uid->setGeometry(QRect(370, 40, 181, 16));
         dev_uid->setFont(font4);
         flash_info_label = new QLabel(device_info);
         flash_info_label->setObjectName(QString::fromUtf8("flash_info_label"));
@@ -422,11 +425,7 @@ public:
         entries_label = new QLabel(device_info);
         entries_label->setObjectName(QString::fromUtf8("entries_label"));
         entries_label->setGeometry(QRect(90, 130, 91, 20));
-        QFont font6;
-        font6.setPointSize(14);
-        font6.setBold(true);
-        font6.setWeight(75);
-        entries_label->setFont(font6);
+        entries_label->setFont(font3);
         line_2 = new QFrame(device_info);
         line_2->setObjectName(QString::fromUtf8("line_2"));
         line_2->setGeometry(QRect(290, 180, 451, 20));
@@ -439,7 +438,7 @@ public:
         line_3->setFrameShadow(QFrame::Sunken);
         data_read_bar = new QProgressBar(device_info);
         data_read_bar->setObjectName(QString::fromUtf8("data_read_bar"));
-        data_read_bar->setGeometry(QRect(510, 350, 181, 31));
+        data_read_bar->setGeometry(QRect(590, 410, 181, 16));
         QPalette palette2;
         palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
         palette2.setBrush(QPalette::Active, QPalette::Button, brush2);
@@ -511,26 +510,28 @@ public:
         file_location_label = new QLabel(device_info);
         file_location_label->setObjectName(QString::fromUtf8("file_location_label"));
         file_location_label->setGeometry(QRect(90, 230, 121, 31));
-        QFont font7;
-        font7.setPointSize(16);
-        font7.setBold(false);
-        font7.setUnderline(true);
-        font7.setWeight(50);
-        file_location_label->setFont(font7);
+        QFont font6;
+        font6.setPointSize(16);
+        font6.setBold(false);
+        font6.setUnderline(true);
+        font6.setWeight(50);
+        file_location_label->setFont(font6);
         path_edit = new QLineEdit(device_info);
         path_edit->setObjectName(QString::fromUtf8("path_edit"));
-        path_edit->setGeometry(QRect(200, 230, 321, 31));
-        path_edit->setFont(font4);
+        path_edit->setGeometry(QRect(200, 230, 411, 31));
+        QFont font7;
+        font7.setPointSize(12);
+        path_edit->setFont(font7);
         change_path_button = new QPushButton(device_info);
         change_path_button->setObjectName(QString::fromUtf8("change_path_button"));
-        change_path_button->setGeometry(QRect(520, 230, 131, 32));
+        change_path_button->setGeometry(QRect(610, 230, 141, 32));
         download_label = new QLabel(device_info);
         download_label->setObjectName(QString::fromUtf8("download_label"));
         download_label->setGeometry(QRect(20, 180, 261, 21));
         download_label->setFont(font2);
         collect_button = new QPushButton(device_info);
         collect_button->setObjectName(QString::fromUtf8("collect_button"));
-        collect_button->setGeometry(QRect(610, 430, 141, 51));
+        collect_button->setGeometry(QRect(600, 430, 141, 51));
         sensor_location_label = new QLabel(device_info);
         sensor_location_label->setObjectName(QString::fromUtf8("sensor_location_label"));
         sensor_location_label->setGeometry(QRect(90, 280, 121, 21));
@@ -549,7 +550,7 @@ public:
         loc_instruct_label->setAlignment(Qt::AlignCenter);
         note_label = new QLabel(device_info);
         note_label->setObjectName(QString::fromUtf8("note_label"));
-        note_label->setGeometry(QRect(90, 380, 121, 21));
+        note_label->setGeometry(QRect(90, 370, 121, 21));
         note_label->setFont(font8);
         note_label->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         line_4 = new QFrame(device_info);
@@ -559,15 +560,15 @@ public:
         line_4->setFrameShadow(QFrame::Sunken);
         note_input = new QTextEdit(device_info);
         note_input->setObjectName(QString::fromUtf8("note_input"));
-        note_input->setGeometry(QRect(90, 410, 271, 61));
-        widget = new QWidget(device_info);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(230, 320, 127, 41));
-        longitude_label = new QVBoxLayout(widget);
+        note_input->setGeometry(QRect(90, 400, 271, 61));
+        layoutWidget2 = new QWidget(device_info);
+        layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(230, 320, 127, 41));
+        longitude_label = new QVBoxLayout(layoutWidget2);
         longitude_label->setSpacing(0);
         longitude_label->setObjectName(QString::fromUtf8("longitude_label"));
         longitude_label->setContentsMargins(0, 0, 0, 0);
-        longitude_edit = new QLineEdit(widget);
+        longitude_edit = new QLineEdit(layoutWidget2);
         longitude_edit->setObjectName(QString::fromUtf8("longitude_edit"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy3.setHorizontalStretch(0);
@@ -577,7 +578,7 @@ public:
 
         longitude_label->addWidget(longitude_edit);
 
-        long_label = new QLabel(widget);
+        long_label = new QLabel(layoutWidget2);
         long_label->setObjectName(QString::fromUtf8("long_label"));
         sizePolicy.setHeightForWidth(long_label->sizePolicy().hasHeightForWidth());
         long_label->setSizePolicy(sizePolicy);
@@ -586,19 +587,19 @@ public:
 
         longitude_label->addWidget(long_label);
 
-        widget1 = new QWidget(device_info);
-        widget1->setObjectName(QString::fromUtf8("widget1"));
-        widget1->setGeometry(QRect(90, 320, 127, 41));
-        latitude_layout = new QVBoxLayout(widget1);
+        layoutWidget3 = new QWidget(device_info);
+        layoutWidget3->setObjectName(QString::fromUtf8("layoutWidget3"));
+        layoutWidget3->setGeometry(QRect(90, 320, 127, 41));
+        latitude_layout = new QVBoxLayout(layoutWidget3);
         latitude_layout->setSpacing(0);
         latitude_layout->setObjectName(QString::fromUtf8("latitude_layout"));
         latitude_layout->setContentsMargins(0, 0, 0, 0);
-        latitude_edit = new QLineEdit(widget1);
+        latitude_edit = new QLineEdit(layoutWidget3);
         latitude_edit->setObjectName(QString::fromUtf8("latitude_edit"));
 
         latitude_layout->addWidget(latitude_edit);
 
-        lat_label = new QLabel(widget1);
+        lat_label = new QLabel(layoutWidget3);
         lat_label->setObjectName(QString::fromUtf8("lat_label"));
         lat_label->setFont(font9);
         lat_label->setAlignment(Qt::AlignCenter);
@@ -607,7 +608,7 @@ public:
 
         curr_status_label = new QLabel(device_info);
         curr_status_label->setObjectName(QString::fromUtf8("curr_status_label"));
-        curr_status_label->setGeometry(QRect(520, 330, 111, 17));
+        curr_status_label->setGeometry(QRect(620, 390, 111, 17));
         QFont font10;
         font10.setPointSize(10);
         font10.setBold(false);
@@ -617,10 +618,19 @@ public:
         curr_status_label->setAlignment(Qt::AlignCenter);
         curr_task_label = new QLabel(device_info);
         curr_task_label->setObjectName(QString::fromUtf8("curr_task_label"));
-        curr_task_label->setGeometry(QRect(510, 310, 129, 19));
-        curr_task_label->setFont(font7);
+        curr_task_label->setGeometry(QRect(610, 360, 129, 19));
+        curr_task_label->setFont(font6);
+        get_last_location = new QPushButton(device_info);
+        get_last_location->setObjectName(QString::fromUtf8("get_last_location"));
+        get_last_location->setGeometry(QRect(90, 470, 131, 32));
+        change_location_button = new QPushButton(device_info);
+        change_location_button->setObjectName(QString::fromUtf8("change_location_button"));
+        change_location_button->setGeometry(QRect(232, 470, 131, 32));
         program_pages->addWidget(device_info);
-        layoutWidget->raise();
+        layoutWidget2->raise();
+        curr_status_label->raise();
+        curr_task_label->raise();
+        layoutWidget2->raise();
         info_label->raise();
         dev_ser_num_label->raise();
         dev_uid_lab->raise();
@@ -642,13 +652,11 @@ public:
         collect_button->raise();
         sensor_location_label->raise();
         loc_instruct_label->raise();
-        latitude_edit->raise();
-        longitude_edit->raise();
-        lat_label->raise();
-        long_label->raise();
         note_label->raise();
         line_4->raise();
         note_input->raise();
+        get_last_location->raise();
+        change_location_button->raise();
 
         verticalLayout->addWidget(program_pages);
 
@@ -691,7 +699,7 @@ public:
         entries_label->setText(QCoreApplication::translate("MainWindow", "Total Entries:", nullptr));
         file_location_label->setText(QCoreApplication::translate("MainWindow", "File Location:", nullptr));
         path_edit->setText(QCoreApplication::translate("MainWindow", "/Users/brianschwantes/Dowloads/", nullptr));
-        change_path_button->setText(QCoreApplication::translate("MainWindow", "Change Location", nullptr));
+        change_path_button->setText(QCoreApplication::translate("MainWindow", "Change File Path", nullptr));
         download_label->setText(QCoreApplication::translate("MainWindow", "Download Data from Light Sensor", nullptr));
         collect_button->setText(QCoreApplication::translate("MainWindow", "Download", nullptr));
         sensor_location_label->setText(QCoreApplication::translate("MainWindow", "Sensor Location", nullptr));
@@ -701,6 +709,8 @@ public:
         lat_label->setText(QCoreApplication::translate("MainWindow", "Latitude (-90 to 90)", nullptr));
         curr_status_label->setText(QCoreApplication::translate("MainWindow", "N/A", nullptr));
         curr_task_label->setText(QCoreApplication::translate("MainWindow", "Download Status:", nullptr));
+        get_last_location->setText(QCoreApplication::translate("MainWindow", "Get Last Location", nullptr));
+        change_location_button->setText(QCoreApplication::translate("MainWindow", "Change Location", nullptr));
     } // retranslateUi
 
 };
