@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     serial = new QSerialPort(this);
+    ui->serial_num_diagram->setPixmap(QPixmap(":/status/serial_number"));
     intialize_program();
 //    ui->program_pages->setCurrentIndex(0);
 //    ui->data_read_bar->setValue(0);
@@ -33,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    downloading_data = 0;
 //    ui->curr_status_label->setVisible(false);
 //    ui->data_read_bar->setVisible(false);
-//    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
+//    ui->img_status_label->setPixmap(QPixmap(":/status/yellow_box.png"));
     QObject::connect(this, SIGNAL(progress(int)), this, SLOT(on_data_read_bar_valueChanged(int)));
     QObject::connect(this, SIGNAL(function_step(int)), this, SLOT(collection_functions(int)));
 }
@@ -56,14 +57,18 @@ void MainWindow::intialize_program(){
     ui->longitude_edit->setText("");
     ui->date_label->setText("N/A");
     ui->time_label->setText("N/A");
+    ui->note_input->setText("");
 
     ui->serial_num_input->setText("");
     ui->program_pages->setCurrentIndex(0);
     ui->data_read_bar->setValue(0);
     ui->curr_status_label->setVisible(false);
    // ui->data_read_bar->setVisible(false);
-    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
+    ui->img_status_label->setPixmap(QPixmap(":/status/yellow_box.png"));
     ui->change_location_button->setEnabled(false);
+    ui->latitude_edit->setEnabled(true);
+    ui->longitude_edit->setEnabled(true);
+    ui->note_input->setEnabled(true);
 }
 
 /**
@@ -121,7 +126,7 @@ void MainWindow::open_port_for_commun()
         serial->setDataTerminalReady(true);
     }
     else {
-        ui->img_status_label->setPixmap(QPixmap(":/status/red_x.png"));
+        ui->img_status_label->setPixmap(QPixmap(":/status/red_box.png"));
         qApp->processEvents();
         qDebug() << "Error opening connection";
     }
@@ -163,6 +168,16 @@ void MainWindow::update_device_directory() {
 void MainWindow::on_serial_enter_clicked()
 {
     qDebug()<<"Function: on_serial_enter_clicked()";
+    QMessageBox msgBox;
+    QString serial_input = ui->serial_num_input->text();
+    if (serial_input == "") {
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("Serial Number Input is Empty");
+        msgBox.setInformativeText("Please enter the device serial number.");
+      //  msgBox.setStandardButtons(QMessageBox::);
+        msgBox.exec();
+        return;
+    }
     device_serial_num = ui->serial_num_input->text();
     qDebug()<<"Serial Number Entered: "<<device_serial_num;
     ui->continue_button->setVisible(false);
@@ -236,6 +251,7 @@ void MainWindow::on_collect_button_clicked()
     QString lon = ui->longitude_edit->text();
     if (lat == "" || lon == "") {
         msgBox.setText("No Sensor Location Provided");
+        msgBox.setIcon(QMessageBox::Warning);
         msgBox.setInformativeText("Please enter the location of the sensor before downloading data");
       //  msgBox.setStandardButtons(QMessageBox::);
         msgBox.exec();
@@ -426,12 +442,12 @@ int MainWindow::on_ReceivedData()
     if (last_command == "@") {
         if(check_command(data)) {
             qDebug()<< "Connected to Light Sensor";
-            ui->img_status_label->setPixmap(QPixmap(":/status/green_check.png"));
+            ui->img_status_label->setPixmap(QPixmap(":/status/green_box.png"));
             ui->continue_button->setVisible(true);
             qApp->processEvents();
         }
         else {
-            ui->img_status_label->setPixmap(QPixmap(":/status/red_X.png"));
+            ui->img_status_label->setPixmap(QPixmap(":/status/red_box.png"));
             qApp->processEvents();
         }
         return 0;

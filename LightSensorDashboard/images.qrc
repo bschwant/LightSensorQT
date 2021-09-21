@@ -3,5 +3,9 @@
         <file>red_x.png</file>
         <file>yellow.png</file>
         <file>green_check.png</file>
+        <file>serial_number</file>
+        <file>green_box.png</file>
+        <file>red_box.png</file>
+        <file>yellow_box.png</file>
     </qresource>
 </RCC>
