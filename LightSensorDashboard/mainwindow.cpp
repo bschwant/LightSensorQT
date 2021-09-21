@@ -25,17 +25,45 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     serial = new QSerialPort(this);
-    ui->program_pages->setCurrentIndex(0);
-    ui->data_read_bar->setValue(0);
-    num_records = 0;
-    count = 0;
-    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
+    intialize_program();
+//    ui->program_pages->setCurrentIndex(0);
+//    ui->data_read_bar->setValue(0);
+//    num_records = 0;
+//    collection_progress = 0;
+//    downloading_data = 0;
+//    ui->curr_status_label->setVisible(false);
+//    ui->data_read_bar->setVisible(false);
+//    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
+    QObject::connect(this, SIGNAL(progress(int)), this, SLOT(on_data_read_bar_valueChanged(int)));
+    QObject::connect(this, SIGNAL(function_step(int)), this, SLOT(collection_functions(int)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     serial->close();
+}
+
+void MainWindow::intialize_program(){
+    device_uid = "";
+    device_serial_num = "";
+    num_records = 0;
+    saving_path = "";
+    device_dir = "";
+    collection_progress = 0;
+    downloading_data = 0;
+    ui->latitude_edit->setText("");
+    ui->longitude_edit->setText("");
+    ui->date_label->setText("N/A");
+    ui->time_label->setText("N/A");
+
+    ui->serial_num_input->setText("");
+    ui->program_pages->setCurrentIndex(0);
+    ui->data_read_bar->setValue(0);
+    ui->curr_status_label->setVisible(false);
+   // ui->data_read_bar->setVisible(false);
+    ui->img_status_label->setPixmap(QPixmap(":/status/yellow.png"));
+    ui->change_location_button->setEnabled(false);
 }
 
 /**
@@ -120,12 +148,17 @@ void MainWindow::set_default_path()
     // Set Default path to downloads
     QString default_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     saving_path = default_path;
-    device_dir = saving_path + ',' +device_serial_num;
+    device_dir = helper_functions::get_device_dir(saving_path, device_serial_num, device_uid);
+    qDebug()<<"Device Directory:"<<device_dir;
+//    device_dir = saving_path + '/' +device_serial_num;
     ui->path_edit->setText(default_path);
 }
 
 void MainWindow::update_device_directory() {
-    device_dir = saving_path + ',' +device_serial_num;
+    qDebug()<<"Function: update_device_directory()";
+    device_dir = helper_functions::get_device_dir(saving_path, device_serial_num, device_uid);
+    qDebug()<<"Device Directory:"<<device_dir;
+    // device_dir = saving_path + ',' +device_serial_num;
 }
 void MainWindow::on_serial_enter_clicked()
 {
@@ -164,13 +197,54 @@ void MainWindow::on_get_flash_info_clicked()
     send_command("flash");
 }
 
+void MainWindow::collection_functions(int value) {
+    downloading_data = 1;
 
+    // Check that flash memory is set
+    if(value == 1) {
+        if (num_records == 0) {
+            send_command("flash");
+        }
+        else
+            emit function_step(2);
+    }
+    // Run data command
+    else if (value == 2) {
+        ui->curr_status_label->setText("Saving Device Data");
+        send_command("data");
+           //     save_collection_record();
+    }
+    // Run log command
+    else if (value == 3) {
+        ui->curr_status_label->setText("Saving Device Logs");
+        send_command("log");
+    }
+    // run records command
+    else if (value == 4) {
+        ui->curr_status_label->setText("Savind Collection Records");
+        save_collection_record();
+
+    }
+}
 void MainWindow::on_collect_button_clicked()
 {
     qDebug() << "Function: on_collect_button_clicked()";
-    count = 0;
-    ui->curr_status_label->setText("Downloading Data");
-    send_command("data");
+
+    // Check if user has entered location and collection note
+    QMessageBox msgBox;
+    QString lat = ui->latitude_edit->text();
+    QString lon = ui->longitude_edit->text();
+    if (lat == "" || lon == "") {
+        msgBox.setText("No Sensor Location Provided");
+        msgBox.setInformativeText("Please enter the location of the sensor before downloading data");
+      //  msgBox.setStandardButtons(QMessageBox::);
+        msgBox.exec();
+        return;
+    }
+
+    ui->curr_status_label->setVisible(true);
+    ui->data_read_bar->setVisible(true);
+    emit function_step(1);
 }
 
 /**
@@ -331,28 +405,20 @@ int MainWindow::on_ReceivedData()
     QByteArray temp;
     while(serial->waitForReadyRead(100)) {
         temp = serial->readAll();
-        if (temp == "\n") {
-            count++;
-            if(last_command == "data") {
-                if (count % 30 == 0) {
-                    int data_read_percent = double(count) / double(num_records) * 100.0;
-                    qDebug()<< "Perecent: " << data_read_percent;
-                    ui->data_read_bar->setValue(data_read_percent);
-                    qApp->processEvents();
-               //     qDebug()<< "2 Second";
-                }
-            }
-            else if(last_command == "log") {
-                if (count % 30 == 0) {
-                    int data_read_percent = double(count) / double(num_records) * 100.0;
-                    qDebug()<< "Perecent: " << data_read_percent;
-                    ui->data_read_bar->setValue(data_read_percent);
-                    qApp->processEvents();
-                  //  qDebug()<< "2 Second";
-                }
-            }
+//        qDebug()<<temp<<collection_progress;
 
-        }
+        if (temp == "\n" ) {
+            collection_progress+=1;
+            if(collection_progress % 15 == 0) {
+//                qDebug()<<"HERE?";
+//              collection_progress++;
+                if(last_command == "data" || last_command=="log") {
+                    int data_read_percent = double(collection_progress) / double(num_records) * 100.0;
+                    emit progress (data_read_percent);
+                    qApp->processEvents();
+                }
+            }
+         }
         data.append(temp);
     }
 
@@ -380,6 +446,7 @@ int MainWindow::on_ReceivedData()
             device_uid = lines[1];
             device_uid.replace(QString("\n"),QString(""));
             ui->dev_uid->setText(device_uid);
+            update_device_directory();
         }
         else
             qDebug()<< "Error getting Device UID";
@@ -403,6 +470,9 @@ int MainWindow::on_ReceivedData()
             QString mem_info = temp_line + "/11646  ";
             ui->flash_value->setText(mem_info);
             ui->flash_usage_bar->setValue(percent);
+            if (downloading_data == 1) {
+                 emit function_step(2);
+            }
         }
         return 0;
     }
@@ -410,7 +480,8 @@ int MainWindow::on_ReceivedData()
     if (last_command == "data") {
         if(check_command(data)) {
             save_to_file(lines, 0);
-            send_command("log");
+            emit function_step(3);
+            //send_command("log");
         }
         return 0;
     }
@@ -418,13 +489,17 @@ int MainWindow::on_ReceivedData()
     if (last_command == "log") {
         if(check_command(data)) {
             save_to_file(lines, 1);
-            ui->data_read_bar->setValue(100);
-            qApp->processEvents();
+            emit progress(100);
+           // ui->data_read_bar->setValue(100);
+           // qApp->processEvents();
+            emit function_step(4);
         }
-        ui->curr_status_label->setText("Saving Collection Record");
-        save_collection_record();
+//ui->curr_status_label->setText("Saving Collection Record");
+
+   //     save_collection_record();
         return 0;
     }
+    return 0;
 }
 
 
@@ -437,7 +512,7 @@ void MainWindow::on_get_last_location_clicked()
     qDebug()<<"Function: get_last_location_clicked()";
 
     QString filename = saving_path;
-    device_dir = helper_functions::get_device_dir(saving_path, device_serial_num);
+    device_dir = helper_functions::get_device_dir(saving_path, device_serial_num, device_uid);
     filename = helper_functions::check_if_directory_exists(device_dir);
     filename.append("/Records");
     filename.append("_");
@@ -450,15 +525,17 @@ void MainWindow::on_get_last_location_clicked()
 
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)) {
-        msgBox.setText("Unable to locate previous collection records");
-        msgBox.setInformativeText("Change file path to get past collection data");
+        QString info = "Device might have no previous collection records.\n";
+        info.append("If data has been previously collected from device, check that correct path is selected.");
+        msgBox.setText("Unable to Locate Collection Records for This Light Sensor");
+        msgBox.setInformativeText(info);
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.exec();
 
         if(msgBox.clickedButton() == changePathButton) {
             on_change_path_button_clicked();
-            return;
         }
+        return;
     }
 
 
@@ -493,6 +570,7 @@ void MainWindow::on_get_last_location_clicked()
 
     ui->note_input->setText(note);
     ui->note_input->setEnabled(false);
+    ui->change_location_button->setEnabled(true);
 }
 
 
@@ -501,5 +579,17 @@ void MainWindow::on_change_location_button_clicked()
     ui->latitude_edit->setEnabled(true);
     ui->longitude_edit->setEnabled(true);
     ui->note_input->setEnabled(true);
+}
+
+
+void MainWindow::on_data_read_bar_valueChanged(int value)
+{
+    ui->data_read_bar->setValue(value);
+}
+
+
+void MainWindow::on_new_device_button_clicked()
+{
+    intialize_program();
 }
 
