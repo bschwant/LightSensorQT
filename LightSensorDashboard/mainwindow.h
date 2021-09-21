@@ -18,32 +18,33 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void progress(int value);
+    void ready (int value);
+    void next_command(QString next_command);
+    void function_step(int value);
+
 private slots:
     int on_ReceivedData();
     bool check_command(QByteArray response);
-
     void on_serial_enter_clicked();
-
     void on_check_conn_button_clicked();
-
     void on_continue_button_clicked();
-
-
     void on_get_flash_info_clicked();
-
     void on_change_path_button_clicked();
-
     void on_collect_button_clicked();
-
     void on_get_last_location_clicked();
-
     void on_change_location_button_clicked();
+    void on_data_read_bar_valueChanged(int value);
+    void collection_functions(int value);
+    void on_new_device_button_clicked();
 
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
     QSerialPort *mSerial;
     QList<QSerialPortInfo> mSerialPorts;
+    void intialize_program();
     void updateSerialPorts();
     void get_uid();
     int get_largest_data_index(QString filename);
@@ -63,6 +64,7 @@ private:
     qint16 num_records;
     QString saving_path;
     QString device_dir;
-    int count;
+    int collection_progress;
+    int downloading_data;
 };
 #endif // MAINWINDOW_H
