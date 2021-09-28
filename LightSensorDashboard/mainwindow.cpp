@@ -334,6 +334,9 @@ void MainWindow::save_to_file(QList<QByteArray> lines, int file_type)
     filename.append(device_uid);
     filename.append(".txt");
 
+    // Make sure path seperators are correct for OS
+    filename = QDir::toNativeSeparators(filename);
+
     qDebug() << " File name: "<< filename;
     QFile file(filename);
 
@@ -379,6 +382,9 @@ void MainWindow::save_collection_record()
     filename.append("_");
     filename.append(device_uid);
     filename.append(".txt");
+
+    // Make sure path seperators are correct for OS
+    filename = QDir::toNativeSeparators(filename);
 
     qDebug() << " Filename: "<< filename;
     QFile file(filename);
@@ -544,6 +550,7 @@ void MainWindow::on_get_last_location_clicked()
         QString info = "Device might have no previous collection records.\n";
         info.append("If data has been previously collected from device, check that correct path is selected.");
         msgBox.setText("Unable to Locate Collection Records for This Light Sensor");
+        msgBox.setIcon(QMessageBox::Warning);
         msgBox.setInformativeText(info);
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.exec();

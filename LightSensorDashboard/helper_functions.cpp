@@ -23,12 +23,13 @@ helper_functions::helper_functions()
  * @return
  */
 QString helper_functions::get_device_dir(QString path, QString ser_num, QString dev_uid){
-    QString new_dir;
-    new_dir.append(path);
-    new_dir.append("/");
-    new_dir.append(ser_num);
-    new_dir.append("_");
-    new_dir.append(dev_uid);
+    QString new_dir = path + "/" + ser_num + "_" + dev_uid;
+    new_dir = QDir::toNativeSeparators(new_dir);
+//    new_dir.append(path);
+//    new_dir.append("/");
+//    new_dir.append(ser_num);
+//    new_dir.append("_");
+//    new_dir.append(dev_uid);
     return new_dir;
 }
 
