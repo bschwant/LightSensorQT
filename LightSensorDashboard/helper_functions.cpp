@@ -23,12 +23,13 @@ helper_functions::helper_functions()
  * @return
  */
 QString helper_functions::get_device_dir(QString path, QString ser_num, QString dev_uid){
-    QString new_dir;
-    new_dir.append(path);
-    new_dir.append("/");
-    new_dir.append(ser_num);
-    new_dir.append("_");
-    new_dir.append(dev_uid);
+    QString new_dir = path + "/" + ser_num + "_" + dev_uid;
+    new_dir = QDir::toNativeSeparators(new_dir);
+//    new_dir.append(path);
+//    new_dir.append("/");
+//    new_dir.append(ser_num);
+//    new_dir.append("_");
+//    new_dir.append(dev_uid);
     return new_dir;
 }
 
@@ -108,17 +109,34 @@ QString helper_functions::get_current_date() {
 /**
  * @brief Function to get current time based on system
  * @arg Function takes no arguments
- * @return Formated time set command string (i.e. "ts,12,30,27")
+ * @return Formated time (i.e. 12:30:27")
  */
 QString helper_functions::get_current_time() {
     qDebug()<<"Function: get_current_time()";
     QString time;
 
     QTime ct = QTime::currentTime();
-   // time = "ts,"+ct.toString("HH:m\n\r");
-    time = ct.toString("HH:m");
+   // time = "ts,"+ct.toString("HH:mm,\n\r");
+    time = ct.toString("HH:mm:ss");
 
     qDebug()<<"Current Time: "<< time;
+
+    return time;
+}
+
+/**
+ * @brief Function to get current time based on system for sensor deployment
+ * @return Formated time same as tr return for sensor (i.e. 12,30,27")
+ */
+QString helper_functions::get_current_time_deployment() {
+    qDebug()<<"Function: get_current_time()";
+    QString time;
+
+    QTime ct = QTime::currentTime();
+   // time = "ts,"+ct.toString("HH:mm,\n\r");
+    time = "ts,"+ct.toString("HH,mm,ss");
+
+    //qDebug()<<"Current Time: "<< time;
 
     return time;
 }

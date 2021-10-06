@@ -23,6 +23,7 @@ signals:
     void ready (int value);
     void next_command(QString next_command);
     void function_step(int value);
+    void deployment_step(int value);
 
 private slots:
     int on_ReceivedData();
@@ -38,6 +39,16 @@ private slots:
     void on_data_read_bar_valueChanged(int value);
     void collection_functions(int value);
     void on_new_device_button_clicked();
+    void on_mem_page_button_clicked();
+    void on_deploy_button_clicked();
+    void on_back_mem_button_clicked();
+
+    void on_back_deploy_button_clicked();
+
+    void on_use_last_button_clicked();
+
+    void on_deploy_light_sensor_clicked();
+    void deployment_functions(int value);
 
 private:
     Ui::MainWindow *ui;
@@ -66,5 +77,10 @@ private:
     QString device_dir;
     int collection_progress;
     int downloading_data;
+    QString device_latitude;
+    QString device_longitude;
+    int collection_complete;
+    int sensor_deployment;
+    QString device_time;
 };
 #endif // MAINWINDOW_H

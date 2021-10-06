@@ -7,5 +7,12 @@
         <file>green_box.png</file>
         <file>red_box.png</file>
         <file>yellow_box.png</file>
+        <file>back_icon.png</file>
+    </qresource>
+    <qresource prefix="/button_icon">
+        <file>deploy.png</file>
+        <file>memory.png</file>
+        <file>new_dev.png</file>
+        <file>download.png</file>
     </qresource>
 </RCC>
