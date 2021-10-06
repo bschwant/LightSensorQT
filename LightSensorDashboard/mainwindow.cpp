@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPushButton>
+#include "file_saving.h"
 
 // Function prototypes
 QString get_current_date();
@@ -290,133 +291,93 @@ void MainWindow::on_change_path_button_clicked()
  */
 int MainWindow:: get_largest_data_index(QString filename)
 {
-    QFile file(filename);
+//    QFile file(filename);
 
-    // Check if file already exists
-    if(!file.open(QIODevice:: ReadOnly)) {
-        qDebug() << "Cannot Open File";
-        return 0;
-    }
+//    // Check if file already exists
+//    if(!file.open(QIODevice:: ReadOnly)) {
+//        qDebug() << "Cannot Open File";
+//        return 0;
+//    }
 
-    file.open(QIODevice:: ReadOnly);
+//    file.open(QIODevice:: ReadOnly);
 
-    QTextStream in(&file);
+//    QTextStream in(&file);
 
-    int largest_index = 0;
+//    int largest_index = 0;
 
-    while(!file.atEnd()) {
-        QByteArray line = file.readLine();
-        QList<QByteArray> parsed = line.split(',');
-        largest_index = parsed[1].toInt();
-    }
-    file.close();
-    qDebug()<< "Largest index found in file: "<< largest_index;
-    return largest_index;
+//    while(!file.atEnd()) {
+//        QByteArray line = file.readLine();
+//        QList<QByteArray> parsed = line.split(',');
+//        largest_index = parsed[1].toInt();
+//    }
+//    file.close();
+//    qDebug()<< "Largest index found in file: "<< largest_index;
+//    return largest_index;
 }
 
 /**
- * @brief Function to data/logs/records to respective files
+ * @brief Function to data and logs to respective files
  * @param lines
  * @param file_type int - 0 = data, 1 = logs
  */
 void MainWindow::save_to_file(QList<QByteArray> lines, int file_type)
 {
-    qDebug()<<"Function: save_to_file";
+    qDebug()<<"Function: save_to_file()";
     QString filename = saving_path;
-   // device_dir = helper_functions::get_device_dir(saving_path, device_serial_num);
-    filename = helper_functions::check_if_directory_exists(device_dir);
 
+    // Updates file name to directory .../.../<serial_number>_<device_uid>
+    filename = helper_functions::check_if_directory_exists(device_dir);
 
     if(file_type == 0)
         filename.append("/Data_");
     else if(file_type == 1)
         filename.append("/Logs_");
     else
-        qDebug()<<"File Type Not Valid";
+        qDebug()<<"ERROR: File Type Not Valid";
 
-  //  filename.append("/Data_");
     filename.append(device_serial_num);
     filename.append("_");
     filename.append(device_uid);
     filename.append(".txt");
 
-    qDebug() << " File name: "<< filename;
-    QFile file(filename);
-
-    // Handles saving of data and logs
-    if (file_type == 0 or file_type == 1) {
-        int largest_index = get_largest_data_index(filename);
-
-        file.open(QIODevice::Append);
-
-        // Save any unsaved entries
-        QTextStream out(&file);
-        QList<QByteArray> temp_line;
-        int temp_index = 0;
-
-        int num_lines = lines.count();
-
-        for(int i = 1; i<lines.count()-2; i++) {
-            temp_line = lines[i].split(',');
-            temp_index = temp_line[1].toInt();
-
-            if(temp_index < largest_index)
-                continue;
-            else
-                out<<lines[i];
-              //  qDebug() << lines[i];
-        }
-        qDebug() << "LARGEST INDEX "<< largest_index;
-        out.flush();
-    }
-
-    file.close();
+    // Call function to save data given file path ("filename") and data ("lines")
+    file_saving::save_sensor_data_logs_to_file(filename, lines);
 }
 
-
+/**
+ * @brief Function handles saving record for each collection
+ */
 void MainWindow::save_collection_record()
 {
-    qDebug()<<"Function: save_to_file";
+    qDebug()<<"Function: save_collection_record()";
     QString filename = saving_path;
-   // device_dir = helper_functions::get_device_dir(saving_path, device_serial_num);
+
+    // Updates file name to directory .../.../<serial_number>_<device_uid>
     filename = helper_functions::check_if_directory_exists(device_dir);
+
     filename.append("/Records_");
     filename.append(device_serial_num);
     filename.append("_");
     filename.append(device_uid);
     filename.append(".txt");
 
-    qDebug() << " Filename: "<< filename;
-    QFile file(filename);
-
     // Get current date and time of collection
     QString current_date = helper_functions::get_current_date();
     QString current_time = helper_functions::get_current_time();
-
     // Get user long/lat input
     QString longitude = ui->longitude_edit->text();
     QString latitude = ui->latitude_edit->text();
     device_latitude = longitude;
     device_longitude = latitude;
     collection_complete = 0;
-
     // Get user note input
     QString user_note = ui->note_input->toPlainText();
 
-    file.open(QIODevice::Append);
+    // Add all data for record to strong list
+    QStringList record_data;
+    record_data << current_date << current_time << latitude<< longitude << user_note;
 
-    QTextStream out(&file);
-
-    file.open(QIODevice::Append);
-
-    out<<"Collection Date: " << current_date << "\n";
-    out<<"Collection Time: " << current_time << "\n";
-    out<<"Location: "<< latitude << ", " << longitude << "\n";
-    out<<"Note: "<< user_note << "\n";
-    out<<"-------------------------------------------------------------\n\n";
-
-    out.flush();
-    file.close();
+    file_saving::add_collection_record_to_file(filename, record_data);
 
     ui->curr_status_label->setText("Download Finished");
     collection_complete = 1;
@@ -557,7 +518,6 @@ void MainWindow::on_get_last_location_clicked()
     filename.append("_");
     filename.append(device_uid);
     filename.append(".txt");
-    qDebug()<<"Trying to open file: "<<filename;
 
 
     QFile file(filename);
@@ -688,8 +648,6 @@ void MainWindow::deployment_functions(int value) {
         QString update_time = current_time+"\n\r";
         send_command(update_time);
         qDebug()<<"Update time command being sent to LS: "<< update_time;
-//        current_time = helper_functions::get_current_time_deployment();
-//        qDebug()<<"Current time: "<< current_time;
         emit deployment_step(2);
     }
     else if(value == 2) {
@@ -704,22 +662,29 @@ void MainWindow::deployment_functions(int value) {
         int min_dif = sys_time_list[2].toInt() - dev_time_list[2].toInt();
         int sec_dif = sys_time_list[3].toInt() - dev_time_list[3].toInt();
 
-        int time_theta = (hour_dif * 3600) + (min_dif * 60) + (sec_dif);
-        qDebug()<<"Hour Diff: "<<hour_dif;
-        qDebug()<<"Min Diff: "<<hour_dif;
-        qDebug()<<"Sec Diff: "<<hour_dif;
-        qDebug()<<"Time Theta: "<<time_theta;
+        int time_delta = (hour_dif * 3600) + (min_dif * 60) + (sec_dif);
 
-//        QString update_time = "ts,"+current_time+"\n\r";
-//        qDebug()<<"Update time command being sent to LS: "<< update_time;
-//        //send_command(update_time);
-//        emit deployment_step(3);
+
+        QString contact_name = ui->name_input->text();
+        QString contact_phone = ui->phone_input->text();
+        QString deploy_lat = ui->latitude_input_deploy->text();
+        QString deploy_long = ui->longitude_input_deploy->text();
+        QString time_diff = QString::number(time_delta);
+        QStringList deployment_info;
+        deployment_info << contact_name << contact_phone << deploy_lat << deploy_long << time_diff;
+
+        QString filename = saving_path;
+        filename = helper_functions::check_if_directory_exists(device_dir);
+
+        filename.append("/Records_");
+        filename.append(device_serial_num);
+        filename.append("_");
+        filename.append(device_uid);
+        filename.append(".txt");
+
+        file_saving::add_deployment_record_to_file(filename, deployment_info);
     }
-//    else if(value == 3) {
-//        QStringList time = current_time.split(',');
 
-//        qDebug()<<"Time"<< time;
-//    }
 }
 void MainWindow::on_deploy_light_sensor_clicked()
 {
@@ -739,11 +704,5 @@ void MainWindow::on_deploy_light_sensor_clicked()
         return;
     }
     emit deployment_step(0);
-
-    QString current_time = helper_functions::get_current_time_deployment();
-    qDebug()<<"Current time: "<< current_time;
-
-
-
 }
 
