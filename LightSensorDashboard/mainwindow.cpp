@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->img_status_label->setPixmap(QPixmap(":/status/yellow_box.png"));
     QObject::connect(this, SIGNAL(progress(int)), this, SLOT(on_data_read_bar_valueChanged(int)));
     QObject::connect(this, SIGNAL(function_step(int)), this, SLOT(collection_functions(int)));
+    QObject::connect(this, SIGNAL(deployment_step(int)), this, SLOT(deployment_functions(int)));
 }
 
 MainWindow::~MainWindow()
@@ -51,8 +52,12 @@ void MainWindow::intialize_program(){
     num_records = 0;
     saving_path = "";
     device_dir = "";
+    device_latitude = "";
+    device_longitude = "";
+    collection_complete = 0;
     collection_progress = 0;
     downloading_data = 0;
+    sensor_deployment = 0;
     ui->latitude_edit->setText("");
     ui->longitude_edit->setText("");
     ui->date_label->setText("N/A");
@@ -236,8 +241,9 @@ void MainWindow::collection_functions(int value) {
     }
     // run records command
     else if (value == 4) {
-        ui->curr_status_label->setText("Savind Collection Records");
+        ui->curr_status_label->setText("Saving Collection Records");
         save_collection_record();
+        //collection_complete = 1;
 
     }
 }
@@ -390,6 +396,9 @@ void MainWindow::save_collection_record()
     // Get user long/lat input
     QString longitude = ui->longitude_edit->text();
     QString latitude = ui->latitude_edit->text();
+    device_latitude = longitude;
+    device_longitude = latitude;
+    collection_complete = 0;
 
     // Get user note input
     QString user_note = ui->note_input->toPlainText();
@@ -410,6 +419,7 @@ void MainWindow::save_collection_record()
     file.close();
 
     ui->curr_status_label->setText("Download Finished");
+    collection_complete = 1;
 }
 
 // Handles recieved data from connected device
@@ -421,13 +431,10 @@ int MainWindow::on_ReceivedData()
     QByteArray temp;
     while(serial->waitForReadyRead(100)) {
         temp = serial->readAll();
-//        qDebug()<<temp<<collection_progress;
 
         if (temp == "\n" ) {
             collection_progress+=1;
             if(collection_progress % 15 == 0) {
-//                qDebug()<<"HERE?";
-//              collection_progress++;
                 if(last_command == "data" || last_command=="log") {
                     int data_read_percent = double(collection_progress) / double(num_records) * 100.0;
                     emit progress (data_read_percent);
@@ -437,6 +444,8 @@ int MainWindow::on_ReceivedData()
          }
         data.append(temp);
     }
+    // Show sensor return
+    qDebug()<<"Sensor Return: "<<data;
 
     // Check for "@" command to verify connection to light sensor
     if (last_command == "@") {
@@ -510,11 +519,23 @@ int MainWindow::on_ReceivedData()
            // qApp->processEvents();
             emit function_step(4);
         }
+        return 0;
+    }
+
+    if(last_command == "tr") {
+        qDebug()<< "In tr check";
+        if(sensor_deployment == 1 and check_command(data)) {
+            qDebug()<<"Inside check";
+            device_time  = lines[1];
+            qDebug()<<"Device Time:"<<device_time  ;
+            emit deployment_step(1);
+        }
+        return 0;
+    }
 //ui->curr_status_label->setText("Saving Collection Record");
 
    //     save_collection_record();
-        return 0;
-    }
+
     return 0;
 }
 
@@ -572,6 +593,8 @@ void MainWindow::on_get_last_location_clicked()
     QString time = temp_record_lines[3];
     QString note = temp_record_lines[4];
 
+    device_latitude = latitude;
+    device_longitude = longitude;
     ui->latitude_edit->setText(latitude);
     ui->longitude_edit->setText(longitude);
 
@@ -607,5 +630,120 @@ void MainWindow::on_data_read_bar_valueChanged(int value)
 void MainWindow::on_new_device_button_clicked()
 {
     intialize_program();
+}
+
+void MainWindow::on_mem_page_button_clicked()
+{
+    qDebug()<<"Function: on_mem_page_button_clicked()";
+    ui->program_pages->setCurrentIndex(3);
+}
+
+void MainWindow::on_deploy_button_clicked()
+{
+    if (collection_complete != 1) {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("Please Download Data From Device Before Deployment");
+        msgBox.exec();
+    }
+
+    qDebug()<<"Function: on_deploy_button_clicked()";
+    ui->program_pages->setCurrentIndex(4);
+}
+
+void MainWindow::on_back_mem_button_clicked()
+{
+    qDebug()<<"Function: on_back_mem_button_clicked()";
+    ui->program_pages->setCurrentIndex(2);
+}
+
+void MainWindow::on_back_deploy_button_clicked()
+{
+    qDebug()<<"Function: on_back_deploy_button_clicked()";
+    ui->program_pages->setCurrentIndex(2);
+}
+
+
+void MainWindow::on_use_last_button_clicked()
+{
+    if (device_latitude == "" || device_longitude == "") {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("Cannot Retrieve Past Location");
+        msgBox.setInformativeText("Please enter the coorderniates where light sensor is being deployed");
+        msgBox.exec();
+        return;
+    }
+    ui->latitude_input_deploy->setText(device_latitude);
+    ui->longitude_input_deploy->setText(device_longitude);
+}
+
+void MainWindow::deployment_functions(int value) {
+    QString current_time;
+    if(value == 0) {
+        send_command("tr");
+    }
+    else if(value == 1) {
+        current_time = helper_functions::get_current_time_deployment();
+        QString update_time = current_time+"\n\r";
+        send_command(update_time);
+        qDebug()<<"Update time command being sent to LS: "<< update_time;
+//        current_time = helper_functions::get_current_time_deployment();
+//        qDebug()<<"Current time: "<< current_time;
+        emit deployment_step(2);
+    }
+    else if(value == 2) {
+        current_time = helper_functions::get_current_time_deployment();
+        qDebug()<<"Current time: "<< current_time;
+        qDebug()<<"Device time: "<<device_time;
+
+        QStringList sys_time_list = current_time.split(',');
+        QStringList dev_time_list = device_time.split(',');
+
+        int hour_dif = sys_time_list[1].toInt() - dev_time_list[1].toInt();
+        int min_dif = sys_time_list[2].toInt() - dev_time_list[2].toInt();
+        int sec_dif = sys_time_list[3].toInt() - dev_time_list[3].toInt();
+
+        int time_theta = (hour_dif * 3600) + (min_dif * 60) + (sec_dif);
+        qDebug()<<"Hour Diff: "<<hour_dif;
+        qDebug()<<"Min Diff: "<<hour_dif;
+        qDebug()<<"Sec Diff: "<<hour_dif;
+        qDebug()<<"Time Theta: "<<time_theta;
+
+//        QString update_time = "ts,"+current_time+"\n\r";
+//        qDebug()<<"Update time command being sent to LS: "<< update_time;
+//        //send_command(update_time);
+//        emit deployment_step(3);
+    }
+//    else if(value == 3) {
+//        QStringList time = current_time.split(',');
+
+//        qDebug()<<"Time"<< time;
+//    }
+}
+void MainWindow::on_deploy_light_sensor_clicked()
+{
+    qDebug()<<"Function: deploy_light_sensor_clicked()";
+
+    QString temp_lat = ui->latitude_input_deploy->text();
+    QString temp_long = ui->longitude_input_deploy->text();
+
+    sensor_deployment = 1;
+
+    if(temp_lat == "" || temp_long == "") {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("No Location Input");
+        msgBox.setInformativeText("Please make sure the latitude and longitude inputs are not empty.");
+        msgBox.exec();
+        return;
+    }
+    emit deployment_step(0);
+
+    QString current_time = helper_functions::get_current_time_deployment();
+    qDebug()<<"Current time: "<< current_time;
+
+
+
 }
 
