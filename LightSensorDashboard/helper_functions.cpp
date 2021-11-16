@@ -16,6 +16,9 @@ helper_functions::helper_functions()
 
 }
 
+//QString helper_functions::get_location_hint(QString filename) {
+
+////}
 /**
  * @brief helper function to create string for the device directory
  * @param path
@@ -23,24 +26,41 @@ helper_functions::helper_functions()
  * @return
  */
 QString helper_functions::get_device_dir(QString path, QString ser_num, QString dev_uid){
+<<<<<<< HEAD
     QString new_dir = path + "/" + ser_num + "_" + dev_uid;
     new_dir = QDir::toNativeSeparators(new_dir);
+=======
+//    QString new_dir;
+>>>>>>> development
 //    new_dir.append(path);
 //    new_dir.append("/");
 //    new_dir.append(ser_num);
 //    new_dir.append("_");
 //    new_dir.append(dev_uid);
+<<<<<<< HEAD
+=======
+    QString new_dir = path + "/" + ser_num + "_" + dev_uid;
+    new_dir = QDir::toNativeSeparators(new_dir);
+>>>>>>> development
     return new_dir;
 }
 
 /**
- * @brief helper function that checks if directory exists for connected device exists, and creates one if not
+ * @brief helper function that checks if directory exists for connected device exists
  * @param device_directory input as <path>/<serial#>_<device uid>
  */
 QString helper_functions::check_if_directory_exists(QString device_directory) {
     QDir dir(device_directory);
     if(!dir.exists())
-        dir.mkpath(".");
+        return "";
+//       dir.mkpath(".");
+    return device_directory;
+}
+QString helper_functions::make_directory(QString device_directory) {
+    QDir dir(device_directory);
+    if(!dir.exists())
+//        return "";
+       dir.mkpath(".");
     return device_directory;
 }
 

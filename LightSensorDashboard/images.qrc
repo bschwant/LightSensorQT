@@ -14,5 +14,11 @@
         <file>memory.png</file>
         <file>new_dev.png</file>
         <file>download.png</file>
+        <file>remove.png</file>
+        <file>add.png</file>
+        <file>settings.gif</file>
+    </qresource>
+    <qresource prefix="/profile">
+        <file>user_prof.png</file>
     </qresource>
 </RCC>
