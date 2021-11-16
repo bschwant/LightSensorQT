@@ -6,6 +6,8 @@
 #include <QSerialPortInfo>
 #include "helper_functions.h"
 #include "file_saving.h"
+#include "light_sensor.h"
+#include <QFileSystemModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,9 +17,14 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+//    light_sensor* connected_ls;
+
 public:
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    Ui::MainWindow *ui;
+
 
 signals:
     void progress(int value);
@@ -51,8 +58,48 @@ private slots:
     void on_deploy_light_sensor_clicked();
     void deployment_functions(int value);
 
+    void on_data_collect_button_clicked();
+
+    void on_back_settings_button_clicked();
+
+    void on_setting_button_clicked();
+
+
+    void on_save_settings_button_clicked();
+
+    void on_edit_settings_button_clicked();
+
+    void on_change_path_settings_button_clicked();
+
+    void on_back_serial_button_clicked();
+    void populate_location_list();
+
+    void on_location_dropdown_currentIndexChanged(int index);
+
+    void on_continue_from_location_button_clicked();
+
+    void on_deploy_location_currentIndexChanged(int index);
+
+    void on_manage_loc_button_clicked();
+
+    void on_location_tree_view_clicked(const QModelIndex &index);
+
+    void on_back_loc_man_button_clicked();
+
+    void on_new_location_button_clicked();
+
+    void on_remove_location_button_clicked();
+
+    void on_back_lock_sel_button_clicked();
+
+    void on_skip_download_button_clicked();
+
+//    void on_latitude_edit_textChanged(const QString &arg1);
+
+    void on_location_list_view_clicked(const QModelIndex &index);
+
 private:
-    Ui::MainWindow *ui;
+//    Ui::MainWindow *ui;
     QSerialPort *serial;
     QSerialPort *mSerial;
     QList<QSerialPortInfo> mSerialPorts;
@@ -69,6 +116,14 @@ private:
     void send_command(QString command);
     void update_device_directory();
 
+    void save_settings();
+    void load_settings();
+
+    void remove_location();
+
+    QFileSystemModel *dirModel;
+    QFileSystemModel *subDirs;
+
     // Global Variables for use in program
     QString last_command;
     QString device_uid;
@@ -83,5 +138,8 @@ private:
     int collection_complete;
     int sensor_deployment;
     QString device_time;
+
+    //LightSensor light_sensor;
+
 };
 #endif // MAINWINDOW_H
