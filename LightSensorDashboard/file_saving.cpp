@@ -15,6 +15,27 @@ file_saving::file_saving()
 {
 
 }
+
+// Function to save device data: Serial Num, UID, Lat, Long, Deployment Hint
+void file_saving::save_device_info(QString filename, QStringList data) {
+    QFile file(filename);
+
+    // Check if file already exists
+    if(!file.open(QIODevice:: WriteOnly)) {
+        qDebug() << "Cannot Open File";
+        return;
+    }
+
+    file.open(QIODevice:: WriteOnly);
+
+    QTextStream out(&file);
+
+    for(int i = 0;i< data.length(); i++) {
+        out<<data[i]+"\n";
+    }
+
+    file.close();
+}
 int file_saving::get_largest_data_index(QString filename) {
 
     qDebug()<<"Function: file_saving::get_largest_data_index()";
@@ -70,8 +91,8 @@ void file_saving::save_sensor_data_logs_to_file(QString path, QList<QByteArray> 
             continue;
         else if (temp_index == largest_index) {
             qDebug()<<"No new entries to write to file";
-            file.close();
-            return ;
+//            file.close();
+//            return ;
         }
         else {
             out<<lines[i];
@@ -98,7 +119,7 @@ void file_saving::add_collection_record_to_file(QString path, QStringList record
 
     QTextStream out(&file);
 
-    file.open(QIODevice::Append);
+//    file.open(QIODevice::Append);
 
     // record_data << current_date << current_time << latitude<< longitude << user_note;
     out<<"Record Type: DATA COLLECTION\n";
@@ -123,7 +144,7 @@ void file_saving::add_deployment_record_to_file(QString path, QStringList deploy
 
     QTextStream out(&file);
 
-    file.open(QIODevice::Append);
+//    file.open(QIODevice::Append);
 
     // deployment_info << contact_name << contact_phone << deploy_lat << deploy_long;
     out<<"Record Type: SENSOR DEPLOYMENT\n";
