@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     serial = new QSerialPort(this);
 
-    ui->serial_num_diagram->setPixmap(QPixmap(":/status/serial_number"));
+    ui->serial_num_diagram->setPixmap(QPixmap(":/icon/serial_number"));
     intialize_program();
     load_settings();
 
@@ -83,6 +83,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::intialize_program(){
     light_sensor->new_device();
+//    light_sensor->init_paths(user->get_def_path());
+//    ui->path_edit->setText(user->get_def_path());
+
+
+
 //    device_uid = "";
 //    device_serial_num = "";
 //    num_records = 0;
@@ -90,6 +95,7 @@ void MainWindow::intialize_program(){
 //    device_dir = "";
 //    device_latitude = "";
 //    device_longitude = "";
+    updateSerialPortsConnect();
     collection_complete = 0;
     collection_progress = 0;
     downloading_data = 0;
@@ -105,7 +111,7 @@ void MainWindow::intialize_program(){
     ui->data_read_bar->setValue(0);
     ui->curr_status_label->setVisible(false);
    // ui->data_read_bar->setVisible(false);
-    ui->img_status_label->setPixmap(QPixmap(":/status/yellow_box.png"));
+    ui->img_status_label->setPixmap(QPixmap(":/icon/yellow_box.png"));
     ui->change_location_button->setEnabled(false);
     ui->latitude_edit->setEnabled(true);
     ui->longitude_edit->setEnabled(true);
@@ -146,9 +152,30 @@ void MainWindow:: send_command(QString command)
 {
     qDebug()<<"Sending Command: "<< command;
     QString command_ready = command + "\n\r";
-    serial->write(command_ready.toStdString().c_str());
+    if(serial->isOpen()){
+         serial->write(command_ready.toStdString().c_str());
+         PORT_ERROR = 0;
+    }
+    else {
+        qDebug()<<"SERIAL PORT ERROR: CONNECTION NOT OPEN";
+        PORT_ERROR = 1;
+        if(command == "flash"){
+            double temp = 0;
+            ui->flash_usage_bar->setValue(temp);
+        }
+    }
+//    serial->write(command_ready.toStdString().c_str());
     last_command = command;
 
+}
+void MainWindow::updateSerialPortsConnect()
+{
+    mSerialPorts = QSerialPortInfo::availablePorts();
+
+    ui->ports_box ->clear();
+    for (QSerialPortInfo port : mSerialPorts) {
+        ui->ports_box->addItem(port.portName(), port.systemLocation());
+    }
 }
 
 /**
@@ -157,8 +184,8 @@ void MainWindow:: send_command(QString command)
 void MainWindow::open_port_for_commun()
 {
     qDebug() << "Function to open port for uart to usb device";
-
-    QString device_name = "tty.SLAB_USBtoUART";
+    QString device_name = ui->ports_box->currentText();
+//    QString device_name = "tty.SLAB_USBtoUART";
     serial->setPortName(device_name);
     serial->setBaudRate(QSerialPort::Baud9600);
     serial->setParity(QSerialPort::NoParity);
@@ -172,14 +199,14 @@ void MainWindow::open_port_for_commun()
         serial->setDataTerminalReady(true);
     }
     else {
-        ui->img_status_label->setPixmap(QPixmap(":/status/red_box.png"));
+        ui->img_status_label->setPixmap(QPixmap(":/icon/red_box.png"));
         qApp->processEvents();
         qDebug() << "Error opening connection";
     }
 }
 
 /**
- * @brief Send uid command to light sensor
+ * @brief Send uid command to light sensorsl
  */
 void MainWindow::get_uid()
 {
@@ -373,53 +400,53 @@ void MainWindow::save_to_file(QList<QByteArray> lines, int file_type)
     else
         qDebug()<<"ERROR: File Type Not Valid";
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
     filename.append(device_serial_num);
     filename.append("_");
     filename.append(device_uid);
     filename.append(".txt");
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
     // Make sure path seperators are correct for OS
-    filename = QDir::toNativeSeparators(filename);
+//    filename = QDir::toNativeSeparators(filename);
 
-    qDebug() << " File name: "<< filename;
-    QFile file(filename);
+//    qDebug() << " File name: "<< filename;
+//    QFile file(filename);
 
-    // Handles saving of data and logs
-    if (file_type == 0 or file_type == 1) {
-        int largest_index = get_largest_data_index(filename);
+//    // Handles saving of data and logs
+//    if (file_type == 0 or file_type == 1) {
+//        int largest_index = get_largest_data_index(filename);
 
-        file.open(QIODevice::Append);
+//        file.open(QIODevice::Append);
 
-        // Save any unsaved entries
-        QTextStream out(&file);
-        QList<QByteArray> temp_line;
-        int temp_index = 0;
+//        // Save any unsaved entries
+//        QTextStream out(&file);
+//        QList<QByteArray> temp_line;
+//        int temp_index = 0;
 
-        int num_lines = lines.count();
+//        int num_lines = lines.count();
 
-        for(int i = 1; i<lines.count()-2; i++) {
-            temp_line = lines[i].split(',');
-            temp_index = temp_line[1].toInt();
+//        for(int i = 1; i<lines.count()-2; i++) {
+//            temp_line = lines[i].split(',');
+//            temp_index = temp_line[1].toInt();
 
-            if(temp_index < largest_index)
-                continue;
-            else
-                out<<lines[i];
-              //  qDebug() << lines[i];
-        }
-        qDebug() << "LARGEST INDEX "<< largest_index;
-        out.flush();
-    }
+//            if(temp_index < largest_index)
+//                continue;
+//            else
+//                out<<lines[i];
+//              //  qDebug() << lines[i];
+//        }
+//        qDebug() << "LARGEST INDEX "<< largest_index;
+//        out.flush();
+//    }
 
-    file.close();
-=======
-=======
->>>>>>> development
+//    file.close();
+//=======
+//=======
+//>>>>>>> development
     // Call function to save data given file path ("filename") and data ("lines")
     file_saving::save_sensor_data_logs_to_file(filename, lines);
->>>>>>> development
+//>>>>>>> development
 }
 
 /**
@@ -434,15 +461,15 @@ void MainWindow::save_collection_record()
     filename = helper_functions::make_directory(light_sensor->get_device_directory());
     filename = light_sensor->get_record_path();
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
     // Make sure path seperators are correct for OS
     filename = QDir::toNativeSeparators(filename);
 
     qDebug() << " Filename: "<< filename;
     QFile file(filename);
 
-=======
->>>>>>> development
+//=======
+//>>>>>>> development
     // Get current date and time of collection
     QString current_date = helper_functions::get_current_date();
     QString current_time = helper_functions::get_current_time();
@@ -494,12 +521,12 @@ int MainWindow::on_ReceivedData()
     if (last_command == "@") {
         if(check_command(data)) {
             qDebug()<< "Connected to Light Sensor";
-            ui->img_status_label->setPixmap(QPixmap(":/status/green_box.png"));
+            ui->img_status_label->setPixmap(QPixmap(":/icon/green_box.png"));
             ui->continue_button->setVisible(true);
             qApp->processEvents();
         }
         else {
-            ui->img_status_label->setPixmap(QPixmap(":/status/red_box.png"));
+            ui->img_status_label->setPixmap(QPixmap(":/icon/red_box.png"));
             qApp->processEvents();
         }
         return 0;
@@ -525,7 +552,7 @@ int MainWindow::on_ReceivedData()
     }
 
     if (last_command == "flash") {
-        if(check_command(data)) {
+        if(check_command(data) && PORT_ERROR == 0) {
             qDebug()<< "Recieved Flash Information";
             QRegExp rx("[= ]");
             QString temp_line = lines[2];
@@ -545,6 +572,10 @@ int MainWindow::on_ReceivedData()
             if (downloading_data == 1) {
                  emit function_step(2);
             }
+        }
+        else {
+            double temp = 0;
+            ui->flash_usage_bar->setValue(temp);
         }
         return 0;
     }
@@ -1098,7 +1129,7 @@ void MainWindow::on_remove_location_button_clicked()
 
 void MainWindow::on_back_lock_sel_button_clicked()
 {
-    ui->program_pages->setCurrentIndex(2);
+    ui->program_pages->setCurrentIndex(3);
 }
 
 
@@ -1145,5 +1176,47 @@ void MainWindow::on_location_list_view_clicked(const QModelIndex &index)
     else {
         qDebug()<<"Invalid device information file";
     }
+}
+
+/**
+ * @brief Back button for check connection page
+ */
+void MainWindow::on_back_check_button_clicked()
+{
+   ui->program_pages->setCurrentIndex(2);
+}
+
+/**
+ * @brief Skip Serial Number input page. For DEBUG use only.
+ */
+void MainWindow::on_skip_serial_clicked()
+{
+    ui->program_pages->setCurrentIndex(3);
+}
+
+/**
+ * @brief Skip Check Connection page. For DEBUG use only.
+ */
+void MainWindow::on_skip_check_button_clicked()
+{
+    ui->program_pages->setCurrentIndex(4);
+}
+
+/**
+ * @brief Back button for check connection page
+ */
+void MainWindow::on_back_data_button_clicked()
+{
+    ui->program_pages->setCurrentIndex(7);
+}
+
+
+
+void MainWindow::on_ports_box_currentIndexChanged(int index)
+{
+    ui->ports_box->setCurrentIndex(index);
+    QString port = ui->ports_box->currentText();
+    ui->ports_box->setCurrentText(port);
+    qDebug()<< "Port Selected: "<<port;
 }
 

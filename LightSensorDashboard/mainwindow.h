@@ -98,6 +98,19 @@ private slots:
 
     void on_location_list_view_clicked(const QModelIndex &index);
 
+    void on_back_check_button_clicked();
+
+    void on_skip_serial_clicked();
+
+    void on_skip_check_button_clicked();
+
+    void on_back_data_button_clicked();
+
+//    void on_ports_box_currentTextChanged(const QString &arg1);
+    void updateSerialPortsConnect();
+
+    void on_ports_box_currentIndexChanged(int index);
+
 private:
 //    Ui::MainWindow *ui;
     QSerialPort *serial;
@@ -106,7 +119,7 @@ private:
     void intialize_program();
     void updateSerialPorts();
     void get_uid();
-    int get_largest_data_index(QString filename);
+//    int get_largest_data_index(QString filename);
     void change_path(QString new_path);
     void set_default_path();
     void save_to_file(QList<QByteArray> lines, int file_type );
@@ -139,6 +152,7 @@ private:
     int sensor_deployment;
     QString device_time;
 
+    int PORT_ERROR;
     //LightSensor light_sensor;
 
 };

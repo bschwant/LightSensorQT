@@ -8,6 +8,8 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+ICON = app_icon2.ico
+
 SOURCES += \
     current_user.cpp \
     file_saving.cpp \
@@ -36,3 +38,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     images.qrc
+
+

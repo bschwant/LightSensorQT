@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/status">
+    <qresource prefix="/icon">
         <file>red_x.png</file>
         <file>yellow.png</file>
         <file>green_check.png</file>
@@ -8,6 +8,10 @@
         <file>red_box.png</file>
         <file>yellow_box.png</file>
         <file>back_icon.png</file>
+        <file>myapp.png</file>
+        <file>iuls_icon.ico</file>
+        <file>app_icon2.ico</file>
+        <file>app_icon3.ico.png</file>
     </qresource>
     <qresource prefix="/button_icon">
         <file>deploy.png</file>
